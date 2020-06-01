@@ -6,7 +6,8 @@ from pygame.locals import *
 # Constantes 
 WIDTH = 736
 HEIGHT = 500
-
+viruses = []
+image_virus = "assets/coronavirus.png"
 # Clases  
 #Clase del presonaje principal
 class Gatell(pygame.sprite.Sprite):
@@ -43,12 +44,13 @@ class Gatell(pygame.sprite.Sprite):
 
 #Clase de los enemigos del personaje
 class Coronavirus(pygame.sprite.Sprite):
-    def __init__(self, x):
+    def __init__(self, image_virus, x):
         pygame.sprite.Sprite.__init__(self)
-        self.image = load_image("assets/coronavirus.png", True)
-        self.rect = self.image.get_rect()
+        self.image = load_image(image_virus, True)
+        self.rect = self.image.get_rect()                 
         self.rect.centerx = x
-        self.rect.centery = HEIGHT / 2
+        self.rect.centery = self.image.get_height()
+        
        
     #Mover al enemigo
     def mover(self, keys):
@@ -82,10 +84,16 @@ def main():
     
     background_image = load_image('assets/mexico.png', False)
 
+    # Instanciamos las clases de los objetos en pantalla
     drGatell = Gatell()
-    for i in range(3):
-        coronavirus = Coronavirus(i * 10)
-        sleep(2)
+    for i in range(0,3):    
+        location = i * 80 + 10
+        coronavirus  = Coronavirus(image_virus, location)
+        viruses.append(coronavirus)
+   
+   # coronavirus = Coronavirus(30)
+    
+   
     
     clock = pygame.time.Clock()
 
@@ -103,7 +111,9 @@ def main():
       
         screen.blit(background_image, (0, 0))
         screen.blit(drGatell.image, drGatell.rect)
-        screen.blit(coronavirus.image, coronavirus.rect)
+        for virus in viruses:
+            screen.blit(virus.image, virus.rect)
+      
                
         pygame.display.update()
     return 0
