@@ -7,7 +7,9 @@ from pygame.locals import *
 WIDTH = 736
 HEIGHT = 500
 viruses = []
+recorrido = ["Down"]
 image_virus = "assets/coronavirus.png"
+
 # Clases  
 #Clase del presonaje principal
 class Gatell(pygame.sprite.Sprite):
@@ -50,18 +52,25 @@ class Coronavirus(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()                 
         self.rect.centerx = x
         self.rect.centery = self.image.get_height()
-        
-       
+               
     #Mover al enemigo
-    def mover(self, keys):
-        if self.rect.top >= 0:
-            if keys[K_u]:
-                self.rect.centery -= 3
-        if self.rect.bottom <= HEIGHT:
-            if keys[K_j]:
-                self.rect.centery += 3
-
-
+    #abajo
+    def mover_ememigo(self):
+        if recorrido[0] == "Down":  
+            self.rect.centery += 3 
+            if self.rect.bottom >= HEIGHT - 3 and self.rect.bottom <= HEIGHT +3:
+                print("0000000000000000000000000000000000000000000000000000000000000000000")
+                recorrido.pop()
+                recorrido.append("Up")
+        else:            
+            self.rect.centery -= 3
+            if self.rect.top >= -3 and self.rect.top <= 3:
+                recorrido.pop()
+                recorrido.append("Down")
+    
+                        
+        print("rect top: "+ str(self.rect.top) + " rect bottom: "+ str(self.rect.bottom))
+        print("recorrido "+recorrido[0])
 # Funciones principales
 #carga la imagen de fondo
 def load_image(filename, transparent=False):
@@ -69,8 +78,7 @@ def load_image(filename, transparent=False):
         image = pygame.image.load(filename)
     except pygame.error as message:
         print (message)
-        raise SystemExit
-               
+        raise SystemExit               
     image = image.convert()
     if transparent:
             color = image.get_at((0,0))
@@ -89,12 +97,8 @@ def main():
     for i in range(0,3):    
         location = i * 80 + 10
         coronavirus  = Coronavirus(image_virus, location)
-        viruses.append(coronavirus)
+        viruses.append(coronavirus)   
    
-   # coronavirus = Coronavirus(30)
-    
-   
-    
     clock = pygame.time.Clock()
 
     #Ciclo que mantiene abierta la ventana hasta que se decide cerrar
@@ -104,11 +108,11 @@ def main():
             if eventos.type == QUIT:
                 sys.exit(0)
         
-        keys = pygame.key.get_pressed()
-        
+        #Se obtienen las teclas presionadas
+        keys = pygame.key.get_pressed()        
         drGatell.actualizar(keys)
-        coronavirus.mover(keys)
-      
+        coronavirus.mover_ememigo()
+        #Se agregan los objetos a la pantalla
         screen.blit(background_image, (0, 0))
         screen.blit(drGatell.image, drGatell.rect)
         for virus in viruses:
