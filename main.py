@@ -7,8 +7,10 @@ from pygame.locals import *
 WIDTH = 736
 HEIGHT = 500
 viruses = []
-recorrido = ["Down"]
+recorridoY = ["Down"]
+recorridoX = ["Right"]
 image_virus = "assets/coronavirus.png"
+image_jabon = "assets/jabon.png"
 
 # Clases  
 #Clase del presonaje principal
@@ -37,12 +39,7 @@ class Gatell(pygame.sprite.Sprite):
 
         #Down
         if self.rect.bottom  <= HEIGHT and keys[pygame.K_s]:
-            self.rect.centery += 3
-        
-        #print("rect top: "+ str(self.rect.top) + " rect bottom: "+ str(self.rect.bottom))
-        #print("rect right: "+ str(self.rect.right) + " rect left: "+ str(self.rect.left))
-        #print("witdh image: "+ str(self.image.get_width()) + " height image: "+ str(self.image.get_height()))
-        #print("Posición es =  x: "+ str( self.rect.centerx) + " y: "+str( self.rect.centery ))
+            self.rect.centery += 3                
 
 #Clase de los enemigos del personaje
 class Coronavirus(pygame.sprite.Sprite):
@@ -53,24 +50,38 @@ class Coronavirus(pygame.sprite.Sprite):
         self.rect.centerx = x
         self.rect.centery = self.image.get_height()
                
-    #Mover al enemigo
-    #abajo
+    #Mover al enemigo    
     def mover_ememigo(self):
-        if recorrido[0] == "Down":  
-            self.rect.centery += 3 
-            if self.rect.bottom >= HEIGHT - 3 and self.rect.bottom <= HEIGHT +3:
-                print("0000000000000000000000000000000000000000000000000000000000000000000")
-                recorrido.pop()
-                recorrido.append("Up")
+        if recorridoY[0] == "Down":  
+            self.rect.centery += 2 
+            if self.rect.bottom >= (HEIGHT - int(self.image.get_height()) +5) and self.rect.bottom <= (HEIGHT - int(self.image.get_height()) +5):                
+                recorridoY.pop()
+                recorridoY.append("Up")
         else:            
-            self.rect.centery -= 3
+            self.rect.centery -= 2
             if self.rect.top >= -3 and self.rect.top <= 3:
-                recorrido.pop()
-                recorrido.append("Down")
-    
-                        
-        print("rect top: "+ str(self.rect.top) + " rect bottom: "+ str(self.rect.bottom))
-        print("recorrido "+recorrido[0])
+                recorridoY.pop()
+                recorridoY.append("Down")
+        if recorridoX[0] == "Right":
+            self.rect.centerx += 2
+            if self.rect.right >= WIDTH -3 and self.rect.right <= WIDTH +3:
+                recorridoX.pop()
+                recorridoX.append("Left")
+        else:
+            self.rect.centerx -= 2
+            if self.rect.left >= -3 and self.rect.left <= 3:
+                recorridoX.pop()
+                recorridoX.append("Right")
+
+#Clase de las armas del personaje principal
+class Jabon(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = load_image(image_jabon, True)
+        self.rect = self.image.get_rect()                 
+        self.rect.centerx = 100
+        self.rect.centery = self.image.get_height()
+                                  
 # Funciones principales
 #carga la imagen de fondo
 def load_image(filename, transparent=False):
@@ -94,13 +105,13 @@ def main():
 
     # Instanciamos las clases de los objetos en pantalla
     drGatell = Gatell()
-    for i in range(0,3):    
-        location = i * 80 + 10
+    for i in range(0,1):    
+        location = i * 80 + 100
         coronavirus  = Coronavirus(image_virus, location)
         viruses.append(coronavirus)   
-   
+    jabon  = Jabon()   
     clock = pygame.time.Clock()
-
+    
     #Ciclo que mantiene abierta la ventana hasta que se decide cerrar
     while True:
         time = clock.tick(60)
@@ -117,6 +128,7 @@ def main():
         screen.blit(drGatell.image, drGatell.rect)
         for virus in viruses:
             screen.blit(virus.image, virus.rect)
+        screen.blit(jabon.image, jabon.rect)
       
                
         pygame.display.update()
