@@ -9,6 +9,7 @@ HEIGHT = 500
 viruses = []
 recorridoY = ["Down"]
 recorridoX = ["Right"]
+posicionGatell = []
 image_virus = "assets/coronavirus.png"
 image_jabon = "assets/jabon.png"
 
@@ -23,7 +24,7 @@ class Gatell(pygame.sprite.Sprite):
         self.rect.centery = ( HEIGHT ) - 100
     
     #Mover al personaje principal
-    def actualizar(self, keys):               
+    def actualizar(self , keys):               
         
         #Left     
         if self.rect.left  <= WIDTH and self.rect.left  >= 0   and keys[pygame.K_a]:
@@ -39,8 +40,19 @@ class Gatell(pygame.sprite.Sprite):
 
         #Down
         if self.rect.bottom  <= HEIGHT and keys[pygame.K_s]:
-            self.rect.centery += 3                
+            self.rect.centery += 3       
 
+    #Obtener la posicion en x, y del personaje
+    def posicion_Gatell(self, keys):
+        if keys[pygame.K_SPACE]:          
+            x = self.rect.centerx
+            y = self.rect.centery
+            posicionGatell.append(x)        
+            posicionGatell.append(y)        
+            #for posi in posicionGatell:
+                #print("LA posicionde gatel es "+ str(posi))
+           
+          
 #Clase de los enemigos del personaje
 class Coronavirus(pygame.sprite.Sprite):
     def __init__(self, image_virus, x):
@@ -78,9 +90,16 @@ class Jabon(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
         self.image = load_image(image_jabon, True)
-        self.rect = self.image.get_rect()                 
-        self.rect.centerx = 100
-        self.rect.centery = self.image.get_height()
+        self.rect = self.image.get_rect()             
+        self.rect.centerx =  0
+        self.rect.centery = 0
+        #posicionGatell.clear()
+    def create_jabon(self, keys):
+        if keys[pygame.K_SPACE]:  
+            self.rect.centerx =  posicionGatell[0]
+            self.rect.centery = posicionGatell[1]
+
+       
                                   
 # Funciones principales
 #carga la imagen de fondo
@@ -104,13 +123,14 @@ def main():
     background_image = load_image('assets/mexico.png', False)
 
     # Instanciamos las clases de los objetos en pantalla
-    drGatell = Gatell()
+    drGatell = Gatell()   
     for i in range(0,1):    
         location = i * 80 + 100
         coronavirus  = Coronavirus(image_virus, location)
         viruses.append(coronavirus)   
     jabon  = Jabon()   
     clock = pygame.time.Clock()
+
     
     #Ciclo que mantiene abierta la ventana hasta que se decide cerrar
     while True:
@@ -119,10 +139,14 @@ def main():
             if eventos.type == QUIT:
                 sys.exit(0)
         
-        #Se obtienen las teclas presionadas
+        #Se obtienen las teclas presionadas y se envian a las clases
         keys = pygame.key.get_pressed()        
         drGatell.actualizar(keys)
         coronavirus.mover_ememigo()
+        drGatell.posicion_Gatell(keys)
+        jabon.create_jabon(keys)
+        
+
         #Se agregan los objetos a la pantalla
         screen.blit(background_image, (0, 0))
         screen.blit(drGatell.image, drGatell.rect)
